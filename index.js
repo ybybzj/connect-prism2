@@ -15,6 +15,7 @@ module.exports = {
   create: Prism.create,
   useApi: Api.init,
   useVerboseLog: Logger.useVerboseLog,
+  logToFile: Logger.logToFile,
   middleware: function(req, res, next) {
     if (!HttpEvents.handleRequest(req, res) && !Api.handleRequest(req, res)) {
       next();

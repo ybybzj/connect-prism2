@@ -1,28 +1,27 @@
 {
-  "name": "connect-prism",
+  "name": "connect-prism2",
   "version": "1.0.5",
-  "description": "Record, mock, and proxy HTTP traffic.",
+  "description": "A fork of connect-prism",
   "main": "index.js",
   "scripts": {
     "test": "grunt test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/seglo/connect-prism"
+    "url": "https://github.com/ybybzj/connect-prism2"
   },
   "author": {
-    "name": "Sean Glover",
-    "email": "seglo@randonom.com",
-    "url": "http://randonom.com/blog/"
+    "name": "ybybzj",
+    "email": "ybybzj@gmail.com"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/seglo/connect-prism/blob/master/LICENSE-MIT"
+      "url": "https://github.com/ybybzj/connect-prism2/blob/master/LICENSE-MIT"
     }
   ],
   "bugs": {
-    "url": "https://github.com/seglo/connect-prism/issues"
+    "url": "https://github.com/ybybzj/connect-prism2/issues"
   },
   "engines": {
     "node": ">= 0.10.0"
