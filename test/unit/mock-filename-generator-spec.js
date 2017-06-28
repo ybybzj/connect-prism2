@@ -2,15 +2,14 @@
 
 var assert = require('assert');
 var assertPathEqual = require('../test-utils').assertPathEqual;
-var di = require('di');
 var path = require('path');
 
+var PrismUtils = require("../../lib/services/prism-utils");
 var MockFilenameGenerator = require('../../lib/services/mock-filename-generator');
 
-var injector = new di.Injector([]);
-
 describe('mock filename generator', function() {
-  var mockFilenameGenerator = injector.get(MockFilenameGenerator);
+  var prismUtils = new PrismUtils();
+  var mockFilenameGenerator = new MockFilenameGenerator(prismUtils);
 
   it('should support overriding of the filename generator function', function() {
     function testFilenameCallback(config, req) {
@@ -64,7 +63,26 @@ describe('mock filename generator', function() {
 
     var mockResponsePath = mockFilenameGenerator.getMockPath(prism, req);
 
-    assertPathEqual(mockResponsePath, 'mocks/foo/_is_this_url_really=that_237a2df1a4dfefe26d84b37103583200b8cd9c48.json');
+    assertPathEqual(mockResponsePath, 'mocks/foo/_is_this_url_237a2df1a4dfefe26d84b37103583200b8cd9c48.json');
+  });
+
+  it('should sanitize forbidden characters for human readable filename generator with the ignoreParameters configuration', function() {
+    var req = {
+        url: '/is/this/url?really=that&readable=at&all'
+    };
+
+    var prism = {
+        config: {
+            name: 'foo',
+            mocksPath: './mocks',
+            mockFilenameGenerator: 'humanReadable',
+            ignoreParameters: ['really']
+        }
+    };
+
+    var mockResponsePath = mockFilenameGenerator.getMockPath(prism, req);
+
+    assertPathEqual(mockResponsePath, 'mocks/foo/_is_this_url_readable=at&all_deb0c66cb08b81dd8233e55dfc7ecce1b3798a99.json');
   });
 
   it('should support a human readable filename generator function with truncation', function() {
@@ -84,5 +102,25 @@ describe('mock filename generator', function() {
 
     assert.equal(mockResponsePath.split(path.sep)[2].length, 255);
     assertPathEqual(mockResponsePath, 'mocks/foo/_is_this_url_really=that&readable=at&all&aBigNumber=9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999_ae2f067764e7839efdb85d791fbe031a9d1f63e9.json');
+  });
+
+  it('should support a human readable filename generator function with shorter truncation', function () {
+    var req = {
+      url: '/is/this/url?really=that&readable=at&all&aBigNumber=999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999'
+    };
+
+    var prism = {
+      config: {
+        name: 'foo',
+        mocksPath: './mocks',
+        mockFilenameGenerator: 'humanReadable',
+        mockFilenameMaxLength: 120,
+      }
+    };
+
+    var mockResponsePath = mockFilenameGenerator.getMockPath(prism, req);
+
+    assert.equal(mockResponsePath.split(path.sep)[2].length, 120);
+    assertPathEqual(mockResponsePath, 'mocks/foo/_is_this_url_really=that&readable=at&all&aBigNumber=9999999999999999999999_ae2f067764e7839efdb85d791fbe031a9d1f63e9.json');
   });
 });
